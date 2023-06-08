@@ -1,0 +1,6 @@
+*
+!RH-IT-Root-CA.crt
+!target/*-runner
+!target/*-runner.jar
+!target/lib/*
+!target/quarkus-app/*

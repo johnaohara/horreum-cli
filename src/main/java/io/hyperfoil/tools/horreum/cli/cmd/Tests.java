@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hyperfoil.tools.HorreumClient;
 import io.hyperfoil.tools.horreum.api.SortDirection;
 import io.hyperfoil.tools.horreum.api.data.Test;
+import org.apache.http.conn.HttpHostConnectException;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
+import javax.ws.rs.ProcessingException;
 import java.util.List;
 
 @CommandLine.Command(name = "test", description = "List all tests", subcommands = {
@@ -15,35 +17,29 @@ import java.util.List;
 })
 public class Tests {
 }
+
 @CommandLine.Command(name = "list", description = "List all tests")
-class TestListCommand implements Runnable {
+class TestListCommand extends AbstractCommand {
     @Inject
     HorreumClient client;
 
     @Override
-    public void run() {
-        try {
-            List<Test> tests =  client.testService.list(
-                    null,
-                    null,
-                    null,
-                    "name",
-                    SortDirection.Ascending
-            );
+    public void runCmd() {
+        List<Test> tests = client.testService.list(
+                null,
+                null,
+                null,
+                "name",
+                SortDirection.Ascending
+        );
 
-            System.out.println("Found Tests: ");
-            tests.stream().map(t -> t.id.toString().concat(" - ") .concat(t.name)).forEach(System.out::println);
-
-        }
-        catch (Exception e){
-            System.err.println("Failed: ".concat(e.getMessage()));
-            e.printStackTrace();
-        }
+        System.out.println("Found Tests: ");
+        tests.stream().map(t -> t.id.toString().concat(" - ").concat(t.name)).forEach(System.out::println);
     }
 }
 
 @CommandLine.Command(name = "info", description = "Print detail of a test")
-class TestDetailCommand implements Runnable{
+class TestDetailCommand extends AbstractCommand {
     @Inject
     HorreumClient client;
 
@@ -51,8 +47,7 @@ class TestDetailCommand implements Runnable{
     String testID;
 
     @Override
-    public void run() {
-
+    public void runCmd() {
         Integer ItestId = Integer.parseInt(testID);
         try {
 
@@ -64,6 +59,7 @@ class TestDetailCommand implements Runnable{
             System.err.println("ERROR: ".concat(e.getMessage()));
         }
     }
+
 
 }
 

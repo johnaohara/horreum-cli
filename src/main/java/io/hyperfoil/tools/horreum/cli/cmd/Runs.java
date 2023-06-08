@@ -19,6 +19,7 @@ import java.util.Map;
         GetDatasetCommand.class,
         GetRunSummary.class,
         ListCommand.class,
+        RunRegression.class,
         UploadRun.class,
         UploadAndRegression.class
 })
@@ -175,7 +176,7 @@ class UploadAndRegression extends UploadRun {
                 System.out.println("Dataset: ".concat(dataSetID.toString()));
                 results.stream().map(result -> {
                     try {
-                        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(test);
+                        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
                     } catch (JsonProcessingException e) {
                         System.err.println("Error processing result: ".concat(e.getMessage()));
                         return "";
@@ -194,8 +195,42 @@ class RunRegression implements Runnable {
     @Inject
     RunSvc runSvc;
 
+    @CommandLine.Option(names = {"-i", "--dataset-id"}, description = "Dataset ID", required = true)
+    String datasetId;
+
     @Override
     public void run() {
+
+        RunService.RunSummary summary = runSvc.runSummary(Integer.parseInt(datasetId));
+
+        Integer[] datasets = summary.datasets;
+
+        if (datasets.length == 0) {
+            System.err.println("ERROR: No datasets found, please check the run had a valid schema");
+        } else {
+            System.out.println("Now running regression tests!");
+
+            Map<Integer, List<ExperimentService.ExperimentResult>> experimentResults = new HashMap<>();
+
+            Arrays.stream(datasets).forEach(
+                    dataSetID -> experimentResults.put(dataSetID, runSvc.executeExperiment(dataSetID))
+            );
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            experimentResults.forEach((dataSetID, results) -> {
+                System.out.println("Dataset: ".concat(dataSetID.toString()));
+                results.stream().map(result -> {
+                    try {
+                        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+                    } catch (JsonProcessingException e) {
+                        System.err.println("Error processing result: ".concat(e.getMessage()));
+                        return "";
+                    }
+                }).forEach(System.out::println);
+            });
+
+        }
 
     }
 }

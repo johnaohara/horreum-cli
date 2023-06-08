@@ -1,0 +1,5 @@
+[
+  { "interfaces": [ "io.hyperfoil.tools.horreum.api.services.RunService", "org.jboss.resteasy.client.jaxrs.internal.proxy.ResteasyClientProxy" ] },
+  { "interfaces": [ "io.hyperfoil.tools.horreum.api.services.RunService", "org.jboss.resteasy.microprofile.client.RestClientProxy", "java.io.Closeable" ] },
+  { "interfaces": [ "org.keycloak.admin.client.token.TokenService" ] }
+]

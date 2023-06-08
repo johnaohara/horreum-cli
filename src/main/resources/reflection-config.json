@@ -16,15 +16,6 @@
     "allPublicMethods" : true,
     "allDeclaredFields" : true,
     "allPublicFields" : true
-  },
-  {
-    "name" : "org.jboss.resteasy.client.jaxrs.internal.proxy.`ProxyBuilderImpl`",
-    "allDeclaredConstructors" : true,
-    "allPublicConstructors" : true,
-    "allDeclaredMethods" : true,
-    "allPublicMethods" : true,
-    "allDeclaredFields" : true,
-    "allPublicFields" : true
   }
 
 ]

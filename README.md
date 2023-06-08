@@ -23,7 +23,6 @@ $ cat ./.env
 horreum.uri=http://localhost:8080
 horreum.user=user
 horreum.password=secret
-horreum.keycloak.baseUrl=http://localhost:8180
 ```
 
 ## run cli
@@ -57,7 +56,7 @@ Commands:
       new                  Upload a new run
       new-with-regression  Upload a new run and test datasets for regression
   test
-      info  Print detail of a test
-      list  List all tests
+      info                  Print detail of a test
+      list                  List all tests
 
 ```

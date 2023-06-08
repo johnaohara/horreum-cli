@@ -25,16 +25,16 @@ class TestListCommand extends AbstractCommand {
 
     @Override
     public void runCmd() {
-        List<Test> tests = client.testService.list(
-                null,
-                null,
-                null,
-                "name",
-                SortDirection.Ascending
-        );
+            List<Test> tests = client.testService.list(
+                    null,
+                    null,
+                    null,
+                    "name",
+                    SortDirection.Ascending
+            );
 
-        System.out.println("Found Tests: ");
-        tests.stream().map(t -> t.id.toString().concat(" - ").concat(t.name)).forEach(System.out::println);
+            System.out.println("Found Tests: ");
+            tests.stream().map(t -> t.id.toString().concat(" - ").concat(t.name)).forEach(System.out::println);
     }
 }
 

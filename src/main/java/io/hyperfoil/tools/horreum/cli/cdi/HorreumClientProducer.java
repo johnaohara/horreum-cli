@@ -12,15 +12,6 @@ public class HorreumClientProducer {
     @ConfigProperty(name = "horreum.uri")
     String horremUrl;
 
-    @ConfigProperty(name = "horreum.keycloak.baseUrl")
-    String keyCloakBaseUrl;
-
-    @ConfigProperty(name = "horreum.keycloak.realm")
-    String keycloakRealm;
-
-    @ConfigProperty(name = "horreum.keycloak.clientID")
-    String keycloakClientID;
-
     @ConfigProperty(name ="horreum.user")
     String horremUserName;
 
@@ -31,15 +22,14 @@ public class HorreumClientProducer {
     @Produces
     @Singleton
     HorreumClient produce() {
-        HorreumClient.Builder clientBuilder = new HorreumClient.Builder()
-                .horreumUrl(horremUrl)
-                .keycloakUrl(keyCloakBaseUrl)
-                .keycloakRealm(keycloakRealm)
-                .clientId(keycloakClientID)
-                .horreumUser(horremUserName)
-                .horreumPassword(horremPassword);
-        return clientBuilder.build();
-
+        try {
+            return new HorreumClient.Builder()
+                    .horreumUrl(horremUrl)
+                    .horreumUser(horremUserName)
+                    .horreumPassword(horremPassword).build();
+        } catch (Exception e){
+            System.err.println("Could not instantiate client, please check configuration and try again");
+        }
+        return null;
     }
-
 }

@@ -8,11 +8,14 @@ import io.hyperfoil.tools.horreum.api.services.RunService;
 import io.hyperfoil.tools.horreum.cli.srv.RunSvc;
 import picocli.CommandLine;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static io.hyperfoil.tools.horreum.cli.cmd.Runs.runExperiment;
 
 @CommandLine.Command(name = "run", description = "List all runs for a particular test", subcommands = {
         GetDataCommand.class,
@@ -24,6 +27,39 @@ import java.util.Map;
         UploadAndRegression.class
 })
 public class Runs {
+    public static void runExperiment(RunSvc runSvc, String datasetId) {
+        RunService.RunSummary summary = runSvc.runSummary(Integer.parseInt(datasetId));
+
+        Integer[] datasets = summary.datasets;
+
+        if (datasets.length == 0) {
+            System.err.println("ERROR: No datasets found, please check the run had a valid schema");
+        } else {
+            System.out.println("Now running regression tests!");
+
+            Map<Integer, List<ExperimentService.ExperimentResult>> experimentResults = new HashMap<>();
+
+            Arrays.stream(datasets).forEach(
+                    dataSetID -> experimentResults.put(dataSetID, runSvc.executeExperiment(dataSetID))
+            );
+
+            ObjectMapper mapper = new ObjectMapper();
+
+            experimentResults.forEach((dataSetID, results) -> {
+                System.out.println("Dataset: ".concat(dataSetID.toString()));
+                results.stream().map(result -> {
+                    try {
+                        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+                    } catch (JsonProcessingException e) {
+                        System.err.println("Error processing result: ".concat(e.getMessage()));
+                        return "";
+                    }
+                }).forEach(System.out::println);
+            });
+
+        }
+    }
+
 }
 
 @CommandLine.Command(name = "list", description = "List all runs")
@@ -93,27 +129,28 @@ class GetRunSummary implements Runnable {
 }
 
 @CommandLine.Command(name = "data", description = "Get run data payload")
-class GetDataCommand implements Runnable {
+class GetDataCommand extends AbstractCommand {
     @Inject
     RunSvc runSvc;
+
     @CommandLine.Option(names = {"-i", "--run-id"}, description = "Run ID", required = true)
     String runID;
 
     @Override
-    public void run() {
+    public void runCmd() {
+        ObjectMapper mapper = new ObjectMapper();
         try {
-            ObjectMapper mapper = new ObjectMapper();
             System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(runSvc.runData(Integer.parseInt(runID))));
 
         } catch (Exception e) {
-            System.err.println("Failed: ".concat(e.getMessage()));
+            System.err.println("Unable to deserialize run data: ".concat(e.getMessage()));
         }
     }
 }
 
 
 @CommandLine.Command(name = "new", description = "Upload a new run")
-class UploadRun implements Runnable {
+class UploadRun extends AbstractCommand {
 
     @Inject
     RunSvc runSvc;
@@ -140,9 +177,8 @@ class UploadRun implements Runnable {
     String schema;
 
     @Override
-    public void run() {
-
-        String location = runSvc.upload(jsonFile, start, stop, test, owner, owner, access, schema);
+    public void runCmd() {
+        runSvc.upload(jsonFile, start, stop, test, owner, owner, access, schema);
     }
 
 }
@@ -155,36 +191,7 @@ class UploadAndRegression extends UploadRun {
 
         String runID = location.split("/")[1]; //todo: make this less fragile
 
-        RunService.RunSummary summary = runSvc.runSummary(Integer.parseInt(runID));
-
-        Integer[] datasets = summary.datasets;
-
-        if (datasets.length == 0) {
-            System.err.println("ERROR: No datasets found, please check the run had a valid schema");
-        } else {
-            System.out.println("Now running regression tests!");
-
-            Map<Integer, List<ExperimentService.ExperimentResult>> experimentResults = new HashMap<>();
-
-            Arrays.stream(datasets).forEach(
-                    dataSetID -> experimentResults.put(dataSetID, runSvc.executeExperiment(dataSetID))
-            );
-
-            ObjectMapper mapper = new ObjectMapper();
-
-            experimentResults.forEach((dataSetID, results) -> {
-                System.out.println("Dataset: ".concat(dataSetID.toString()));
-                results.stream().map(result -> {
-                    try {
-                        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
-                    } catch (JsonProcessingException e) {
-                        System.err.println("Error processing result: ".concat(e.getMessage()));
-                        return "";
-                    }
-                }).forEach(System.out::println);
-            });
-
-        }
+        runExperiment(runSvc, runID);
 
     }
 
@@ -201,36 +208,7 @@ class RunRegression implements Runnable {
     @Override
     public void run() {
 
-        RunService.RunSummary summary = runSvc.runSummary(Integer.parseInt(datasetId));
-
-        Integer[] datasets = summary.datasets;
-
-        if (datasets.length == 0) {
-            System.err.println("ERROR: No datasets found, please check the run had a valid schema");
-        } else {
-            System.out.println("Now running regression tests!");
-
-            Map<Integer, List<ExperimentService.ExperimentResult>> experimentResults = new HashMap<>();
-
-            Arrays.stream(datasets).forEach(
-                    dataSetID -> experimentResults.put(dataSetID, runSvc.executeExperiment(dataSetID))
-            );
-
-            ObjectMapper mapper = new ObjectMapper();
-
-            experimentResults.forEach((dataSetID, results) -> {
-                System.out.println("Dataset: ".concat(dataSetID.toString()));
-                results.stream().map(result -> {
-                    try {
-                        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
-                    } catch (JsonProcessingException e) {
-                        System.err.println("Error processing result: ".concat(e.getMessage()));
-                        return "";
-                    }
-                }).forEach(System.out::println);
-            });
-
-        }
+        runExperiment(runSvc, datasetId);
 
     }
 }

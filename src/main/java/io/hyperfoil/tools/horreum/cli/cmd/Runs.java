@@ -2,13 +2,13 @@ package io.hyperfoil.tools.horreum.cli.cmd;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.hyperfoil.tools.horreum.api.ApiUtil;
 import io.hyperfoil.tools.horreum.api.data.DataSet;
 import io.hyperfoil.tools.horreum.api.services.ExperimentService;
 import io.hyperfoil.tools.horreum.api.services.RunService;
 import io.hyperfoil.tools.horreum.cli.srv.RunSvc;
 import picocli.CommandLine;
 
-import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -43,13 +43,11 @@ public class Runs {
                     dataSetID -> experimentResults.put(dataSetID, runSvc.executeExperiment(dataSetID))
             );
 
-            ObjectMapper mapper = new ObjectMapper();
-
             experimentResults.forEach((dataSetID, results) -> {
                 System.out.println("Dataset: ".concat(dataSetID.toString()));
                 results.stream().map(result -> {
                     try {
-                        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result);
+                        return ApiUtil.OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(result);
                     } catch (JsonProcessingException e) {
                         System.err.println("Error processing result: ".concat(e.getMessage()));
                         return "";
@@ -95,8 +93,7 @@ class GetDatasetCommand implements Runnable {
         try {
             DataSet dataSet = runSvc.dataSet(Integer.parseInt(datasetID));
 
-            ObjectMapper mapper = new ObjectMapper();
-            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(dataSet));
+            System.out.println(ApiUtil.OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(dataSet));
 
         } catch (Exception e) {
             System.err.println("Failed: ".concat(e.getMessage()));
@@ -115,9 +112,8 @@ class GetRunSummary implements Runnable {
     @Override
     public void run() {
         try {
-            ObjectMapper mapper = new ObjectMapper();
             System.out.println(
-                    mapper.writerWithDefaultPrettyPrinter().writeValueAsString(
+                    ApiUtil.OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(
                             runSvc.runSummary(Integer.parseInt(runID))
                     ));
 
@@ -138,10 +134,8 @@ class GetDataCommand extends AbstractCommand {
 
     @Override
     public void runCmd() {
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(runSvc.runData(Integer.parseInt(runID))));
-
+            System.out.println(ApiUtil.OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(runSvc.runData(Integer.parseInt(runID))));
         } catch (Exception e) {
             System.err.println("Unable to deserialize run data: ".concat(e.getMessage()));
         }

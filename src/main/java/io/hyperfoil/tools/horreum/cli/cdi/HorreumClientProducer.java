@@ -28,7 +28,7 @@ public class HorreumClientProducer {
                     .horreumUser(horremUserName)
                     .horreumPassword(horremPassword).build();
         } catch (Exception e){
-            System.err.println("Could not instantiate client, please check configuration and try again");
+            System.err.println(String.format("Could not connect to Horreum (%s), please check configuration and try again", horremUrl ));
         }
         return null;
     }

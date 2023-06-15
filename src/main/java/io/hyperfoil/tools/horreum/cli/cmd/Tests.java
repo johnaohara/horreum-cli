@@ -1,14 +1,12 @@
 package io.hyperfoil.tools.horreum.cli.cmd;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hyperfoil.tools.HorreumClient;
+import io.hyperfoil.tools.horreum.api.ApiUtil;
 import io.hyperfoil.tools.horreum.api.SortDirection;
 import io.hyperfoil.tools.horreum.api.data.Test;
-import org.apache.http.conn.HttpHostConnectException;
 import picocli.CommandLine;
 
 import javax.inject.Inject;
-import javax.ws.rs.ProcessingException;
 import java.util.List;
 
 @CommandLine.Command(name = "test", description = "List all tests", subcommands = {
@@ -25,6 +23,7 @@ class TestListCommand extends AbstractCommand {
 
     @Override
     public void runCmd() {
+        if ( client != null ) {
             List<Test> tests = client.testService.list(
                     null,
                     null,
@@ -35,6 +34,7 @@ class TestListCommand extends AbstractCommand {
 
             System.out.println("Found Tests: ");
             tests.stream().map(t -> t.id.toString().concat(" - ").concat(t.name)).forEach(System.out::println);
+        }
     }
 }
 
@@ -48,15 +48,15 @@ class TestDetailCommand extends AbstractCommand {
 
     @Override
     public void runCmd() {
-        Integer ItestId = Integer.parseInt(testID);
-        try {
+        if ( client != null ) {
+            try {
 
-            Test test = client.testService.get(ItestId, null);
+                Test test = client.testService.get(Integer.parseInt(testID), null);
 
-            ObjectMapper mapper = new ObjectMapper();
-            System.out.println(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(test));
-        } catch (Exception e) {
-            System.err.println("ERROR: ".concat(e.getMessage()));
+                System.out.println(ApiUtil.OBJECT_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(test));
+            } catch (Exception e) {
+                System.err.println("ERROR: ".concat(e.getMessage()));
+            }
         }
     }
 

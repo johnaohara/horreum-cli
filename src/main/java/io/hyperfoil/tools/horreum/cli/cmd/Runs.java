@@ -22,8 +22,8 @@ import static io.hyperfoil.tools.horreum.cli.cmd.Runs.runExperiment;
         GetRunSummary.class,
         ListCommand.class,
         RunRegression.class,
-        UploadRun.class,
-        UploadAndRegression.class
+        UploadRun.class
+//        UploadAndRegression.class
 })
 public class Runs {
     public static void runExperiment(RunSvc runSvc, String datasetId) {
@@ -166,7 +166,7 @@ class UploadRun extends AbstractCommand {
     @CommandLine.Option(names = {"--access"}, description = "Access: [PUBLIC, PROTECTED, PRIVATE]", required = true)
     String access;
 
-    @CommandLine.Option(names = {"--schema"}, description = "schema URI", required = false)
+    @CommandLine.Option(names = {"--schema"}, description = "schema URI")
     String schema;
 
     @Override
@@ -180,19 +180,19 @@ class UploadRun extends AbstractCommand {
 
 }
 
-@CommandLine.Command(name = "new-with-regression", description = "Upload a new run and test datasets for regression")
-class UploadAndRegression extends UploadRun {
-    @Override
-    public void run() {
-        String location = runSvc.upload(jsonFile, start, stop, test, owner, owner, access, schema);
-
-        String runID = location.split("/")[1]; //todo: make this less fragile
-
-        runExperiment(runSvc, runID);
-
-    }
-
-}
+//@CommandLine.Command(name = "new-with-regression", description = "Upload a new run and test datasets for regression")
+//class UploadAndRegression extends UploadRun {
+//    @Override
+//    public void run() {
+//        String location = runSvc.upload(jsonFile, start, stop, test, owner, owner, access, schema);
+//
+//        String runID = location.split("/")[1]; //todo: make this less fragile
+//
+//        runExperiment(runSvc, runID);
+//
+//    }
+//
+//}
 
 @CommandLine.Command(name = "regression", description = "Perform regression analysis on existing run")
 class RunRegression implements Runnable {

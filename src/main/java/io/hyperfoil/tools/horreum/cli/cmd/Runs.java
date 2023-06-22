@@ -1,7 +1,6 @@
 package io.hyperfoil.tools.horreum.cli.cmd;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.hyperfoil.tools.horreum.api.ApiUtil;
 import io.hyperfoil.tools.horreum.api.data.DataSet;
 import io.hyperfoil.tools.horreum.api.services.ExperimentService;
@@ -172,7 +171,11 @@ class UploadRun extends AbstractCommand {
 
     @Override
     public void runCmd() {
-        runSvc.upload(jsonFile, start, stop, test, owner, owner, access, schema);
+        if ( runSvc != null ) {
+            runSvc.upload(jsonFile, start, stop, test, owner, owner, access, schema);
+        } else {
+            System.err.println("ERROR: Could not instantiate RunSvc client");
+        }
     }
 
 }

@@ -2,6 +2,7 @@ package io.hyperfoil.tools.horreum.cli.srv;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.hyperfoil.tools.HorreumClient;
+import io.hyperfoil.tools.horreum.api.ApiUtil;
 import io.hyperfoil.tools.horreum.api.SortDirection;
 import io.hyperfoil.tools.horreum.api.data.Access;
 import io.hyperfoil.tools.horreum.api.data.DataSet;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 
-import static io.hyperfoil.tools.horreum.cli.util.Util.MAPPER;
 
 @ApplicationScoped
 public class RunSvc {
@@ -83,7 +83,7 @@ public class RunSvc {
 
     private JsonNode loadFile(Path uploadFile) {
         try {
-            return MAPPER.readTree(uploadFile.toFile());
+            return ApiUtil.OBJECT_MAPPER.readTree(uploadFile.toFile());
         } catch (IOException e) {
             System.err.println("File for upload cannot be read: " + uploadFile + " - " + e.getMessage());
             return null;

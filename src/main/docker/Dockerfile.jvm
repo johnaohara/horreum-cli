@@ -81,9 +81,10 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:1.15
 
 ENV LANGUAGE='en_US:en'
 USER root
-COPY RH-IT-Root-CA.crt /etc/RH-IT-Root-CA.crt
-RUN keytool -cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias ldapcert -file /etc/RH-IT-Root-CA.crt
+COPY RH-IT-Root-CA.crt /tmp/RH-IT-Root-CA.crt
+RUN keytool -cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias ldapcert -file /tmp/RH-IT-Root-CA.crt
 RUN update-ca-trust
+RUN keytool -import -noprompt -trustcacerts -alias RH_CA -file /tmp/RH-IT-Root-CA.crt -keystore /etc/pki/java/cacerts -storepass changeit
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
 COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/

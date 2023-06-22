@@ -9,13 +9,13 @@ import javax.inject.Singleton;
 
 @ApplicationScoped
 public class HorreumClientProducer {
-    @ConfigProperty(name = "horreum.uri")
+    @ConfigProperty(name = "horreum.uri", defaultValue = "")
     String horremUrl;
 
-    @ConfigProperty(name ="horreum.user")
+    @ConfigProperty(name ="horreum.user", defaultValue = "")
     String horremUserName;
 
-    @ConfigProperty(name ="horreum.password")
+    @ConfigProperty(name ="horreum.password", defaultValue = "")
     String horremPassword;
 
 
@@ -28,6 +28,7 @@ public class HorreumClientProducer {
                     .horreumUser(horremUserName)
                     .horreumPassword(horremPassword).build();
         } catch (Exception e){
+            e.printStackTrace();
             System.err.println(String.format("Could not connect to Horreum (%s), please check configuration and try again", horremUrl ));
         }
         return null;

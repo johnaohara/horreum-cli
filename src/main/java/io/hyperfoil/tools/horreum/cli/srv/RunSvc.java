@@ -69,7 +69,11 @@ public class RunSvc {
             System.err.println("ERROR: " + e.getMessage());
         }
         if (response != null && response.getStatus() >= 300) {
-            System.err.println("ERROR: (".concat(response.getStatusInfo().toString()).concat(") ").concat(response.readEntity(String.class)));
+            System.err.println(
+                    "ERROR: ("
+                    .concat(response.getStatusInfo().toString()).concat(") ")
+                    .concat(response.getEntity() == null ? "" : response.getEntity().toString())
+            );
         } else {
             String location = response.getHeaderString("Location");
             String newRunUrl = horreumUri.concat(response.getHeaderString("Location")).concat("#run");

@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import static io.hyperfoil.tools.horreum.cli.cmd.Runs.runExperiment;
 
@@ -175,6 +176,7 @@ class UploadRun extends AbstractCommand {
             runSvc.upload(jsonFile, start, stop, test, owner, owner, access, schema);
         } else {
             System.err.println("ERROR: Could not instantiate RunSvc client");
+
         }
     }
 

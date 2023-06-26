@@ -82,9 +82,12 @@ FROM registry.access.redhat.com/ubi8/openjdk-17:1.15
 ENV LANGUAGE='en_US:en'
 USER root
 COPY RH-IT-Root-CA.crt /tmp/RH-IT-Root-CA.crt
-RUN keytool -cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias ldapcert -file /tmp/RH-IT-Root-CA.crt
+COPY apps-sno-perf-lab.pem /tmp/apps-sno-perf-lab.pem
+RUN keytool -cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias RHT_CA -file /tmp/RH-IT-Root-CA.crt
+RUN keytool -cacerts -storepass changeit -noprompt -trustcacerts -importcert -alias SNO_CERT -file /tmp/apps-sno-perf-lab.pem
 RUN update-ca-trust
 RUN keytool -import -noprompt -trustcacerts -alias RH_CA -file /tmp/RH-IT-Root-CA.crt -keystore /etc/pki/java/cacerts -storepass changeit
+RUN keytool -import -noprompt -trustcacerts -alias SNO_CERT -file /tmp/apps-sno-perf-lab.pem -keystore /etc/pki/java/cacerts -storepass changeit
 
 # We make four distinct layers so if there are application changes the library layers can be re-used
 COPY --chown=185 target/quarkus-app/lib/ /deployments/lib/
@@ -94,6 +97,6 @@ COPY --chown=185 target/quarkus-app/quarkus/ /deployments/quarkus/
 
 EXPOSE 8080
 USER 185
-ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
+ENV JAVA_OPTS="-Djava.util.logging.manager=org.jboss.logmanager.LogManager"
 ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 ENTRYPOINT [ "run" ]

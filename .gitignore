@@ -5,6 +5,9 @@ pom.xml.releaseBackup
 pom.xml.versionsBackup
 release.properties
 .flattened-pom.xml
+RH-IT-Root-CA.crt
+apps-sno-perf-lab.pem
+.env*
 
 # Eclipse
 .project

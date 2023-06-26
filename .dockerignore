@@ -1,5 +1,6 @@
 *
 !RH-IT-Root-CA.crt
+!apps-sno-perf-lab.pem
 !target/*-runner
 !target/*-runner.jar
 !target/lib/*

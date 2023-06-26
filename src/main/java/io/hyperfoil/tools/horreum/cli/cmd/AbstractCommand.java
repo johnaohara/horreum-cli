@@ -1,11 +1,7 @@
 package io.hyperfoil.tools.horreum.cli.cmd;
 
-import io.hyperfoil.tools.horreum.cli.srv.RunSvc;
-import io.quarkus.logging.Log;
 import org.apache.http.conn.HttpHostConnectException;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import javax.ws.rs.ProcessingException;
 
 public abstract class AbstractCommand implements Runnable  {

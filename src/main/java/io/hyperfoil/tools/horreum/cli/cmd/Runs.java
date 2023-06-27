@@ -13,7 +13,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 import static io.hyperfoil.tools.horreum.cli.cmd.Runs.runExperiment;
 
@@ -23,7 +22,7 @@ import static io.hyperfoil.tools.horreum.cli.cmd.Runs.runExperiment;
         GetRunSummary.class,
         ListCommand.class,
         RunRegression.class,
-        UploadRun.class
+        NewRun.class
 //        UploadAndRegression.class
 })
 public class Runs {
@@ -144,7 +143,7 @@ class GetDataCommand extends AbstractCommand {
 
 
 @CommandLine.Command(name = "new", description = "Upload a new run")
-class UploadRun extends AbstractCommand {
+class NewRun extends AbstractCommand {
 
     @Inject
     RunSvc runSvc;

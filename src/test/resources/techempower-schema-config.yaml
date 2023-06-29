@@ -1,0 +1,69 @@
+type: Schema
+spec:
+  owner: perf-team
+  access: 0
+  token:
+  id: 125
+  uri: urn:techempower:0.2
+  name: techempower
+  description: techempower shema to transform techempower results into seperate, normalized
+    datasets
+  schema:
+  labels: []
+  transformers:
+  - owner: perf-team
+    access: 0
+    id: 3247537
+    name: NormalizeTechempower
+    description: ''
+    targetSchemaUri: urn:techempower-runtime:0.1
+    extractors:
+    - name: frameworkList
+      jsonpath: "$.frameworks[*]"
+      array: true
+    - name: gitCommitId
+      jsonpath: "$.git.commitId"
+      array: false
+    - name: verification
+      jsonpath: "$.verify"
+      array: false
+    - name: pipelineConcurrencyLevels
+      jsonpath: "$.pipelineConcurrencyLevels"
+      array: false
+    - name: queryIntervals
+      jsonpath: "$.queryIntervals"
+      array: false
+    - name: concurrencyLevels
+      jsonpath: "$.concurrencyLevels"
+      array: false
+    - name: cachedQueryIntervals
+      jsonpath: "$.cachedQueryIntervals"
+      array: false
+    - name: rawData
+      jsonpath: "$.rawData"
+      array: false
+    - name: startTime
+      jsonpath: "$.startTime"
+      array: false
+    function: "({frameworkList, gitCommitId, verification, pipelineConcurrencyLevels,
+      queryIntervals, concurrencyLevels, cachedQueryIntervals, rawData, startTime})
+      => {  \n   var map = frameworkList.map(\n    (framework, i) => {\n\tvar results
+      = {};\n\t    \n\tconst applyMapping = function (test) {\n\t  var levels;\n\t  let
+      found = true;\n\t  let rawRes = [];\n\t  switch(test) {\n\t  \tcase 'db':\n\t
+      \ \tcase 'json':\n\t  \tcase 'fortune':\n\t  \t\tlevels=concurrencyLevels;\n\t
+      \ \t\tbreak;\n\t  \tcase 'plaintext':\n\t  \t\tlevels=pipelineConcurrencyLevels;\n\t
+      \ \t\tbreak;\n\t  \tcase 'query':\n\t  \tcase 'update':\n\t  \t\tlevels=queryIntervals;\n\t
+      \ \t\tbreak;\n\t  \tdefault:\n\t  \t\tfound=false;\n\t  \t\tconsole.log('Unknown
+      Test Type: ' + test);\n\t  }\n\t  if(found){\n\t    \tvar raw = rawData[test][framework];\n\t
+      \   \tconsole.log('Processing: ' + test);\n\t\t\tlevels.forEach((level, j) =>
+      {\n\t\t    \tconsole.log('level: ' + j);\n\t\t\t\traw[j][\"throughput\"] = raw[j][\"totalRequests\"]
+      / (raw[j][\"endTime\"] - raw[j][\"startTime\"]);\n\t\t\t\traw[j][\"level\"] =
+      level;\n\t\t\t\trawRes.push(raw[j]);\n\t\t\t});\n\t  \t\t\n\t  \t  return rawRes;\n\t
+      \ } else {\n\t  \treturn {};\n\t  }\n\t}\n    \n\t\n\tfor (const [key, value]
+      of Object.entries(rawData)) {\n\t  console.log(`${key}: ${value}`);\n\t\tresults[key]
+      = applyMapping(key);\n\t}\n\t\n       return {\n        framework: framework,\n
+      \       commitId: gitCommitId,\n\t\tstartTime: startTime,\n        verify: verification[framework],\n
+      \       results: results\n        };\n    }\n   )\nreturn map;\n}"
+    schemaId: 125
+    schemaUri: urn:techempower:0.2
+    schemaName: techempower

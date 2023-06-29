@@ -16,7 +16,7 @@ import java.util.Map;
 
 import static io.hyperfoil.tools.horreum.cli.cmd.Runs.runExperiment;
 
-@CommandLine.Command(name = "run", description = "List all runs for a particular test", subcommands = {
+@CommandLine.Command(name = "run", description = "manage runs  for a particular test", subcommands = {
         GetDataCommand.class,
         GetDatasetCommand.class,
         GetRunSummary.class,
@@ -34,7 +34,7 @@ public class Runs {
         if (datasets.length == 0) {
             System.err.println("ERROR: No datasets found, please check the run had a valid schema");
         } else {
-            System.out.println("Now running regression tests!");
+            System.out.println("Running regression tests!");
 
             Map<Integer, List<ExperimentService.ExperimentResult>> experimentResults = new HashMap<>();
 

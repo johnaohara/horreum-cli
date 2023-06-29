@@ -10,11 +10,14 @@ import io.hyperfoil.tools.horreum.api.services.ExperimentService;
 import io.hyperfoil.tools.horreum.api.services.RunService;
 import io.hyperfoil.tools.horreum.api.services.RunService.RunsSummary;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.resteasy.specimpl.AbstractBuiltResponse;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -69,10 +72,18 @@ public class RunSvc {
             System.err.println("ERROR: " + e.getMessage());
         }
         if (response != null && response.getStatus() >= 300) {
+            String reponseBody = "";
+            if ( response.getEntity() != null && response.getEntity() instanceof FilterInputStream){
+                try {
+                    reponseBody = new String(((FilterInputStream)response.getEntity()).readAllBytes(), StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    //throw new RuntimeException(e);
+                }
+            }
             System.err.println(
                     "ERROR: ("
-                    .concat(response.getStatusInfo().toString()).concat(") ")
-                    .concat(response.getEntity() == null ? "" : response.getEntity().toString())
+                    .concat(response.getStatusInfo().toString()).concat("): ")
+                    .concat(reponseBody)
             );
         } else {
             String location = response.getHeaderString("Location");
